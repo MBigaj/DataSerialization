@@ -8,7 +8,8 @@ class BusinessResponse():
 
 
 class BusinessHierarchicalStep():
-    def __init__(self, name, duration, children):
+    def __init__(self, id, name, duration, children):
+        self.id = id
         self.name = name
         self.duration = duration
         self.children = children
