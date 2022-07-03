@@ -1,7 +1,7 @@
 import messages_pb2
 
 def generate_data():
-    req = messages_pb2.Request()
+    dto_req = messages_pb2.Request()
     step1 = messages_pb2.Request.Step()
     step2 = messages_pb2.Request.Step()
     step3 = messages_pb2.Request.Step()
@@ -26,7 +26,7 @@ def generate_data():
     step4.duration = 4
     step4.name = 'Fourth'
 
-    req.steps.extend([step1, step2, step3, step4])
+    dto_req.steps.extend([step1, step2, step3, step4])
 
     with open("./messages_serialized", "wb") as file:
-        file.write(req.SerializeToString())
+        file.write(dto_req.SerializeToString())

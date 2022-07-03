@@ -4,14 +4,13 @@ from BusinessLogicService import DoBusinessLogic
 from data_generator import generate_data
 from ResponseClass import BusinessResponse
 from response_mapper import MapToProtobufResponse
+import numpy as np
 
 # Function that generates a serialized message
 generate_data()
 
-
-
-def DataSerializer(req: messages_pb2.Request):
-	b_req = MapToBusinessRequest(req)
+def GenerateStructure(dto_req: messages_pb2.Request):
+	b_req = MapToBusinessRequest(dto_req)
 
 	business_result = DoBusinessLogic(b_req)
 
@@ -25,14 +24,14 @@ def DataSerializer(req: messages_pb2.Request):
 
 
 def main():
-	req = messages_pb2.Request()
+	dto_req = messages_pb2.Request()
 
 	with(open('./messages_serialized', 'rb') as file):
-		req.ParseFromString(file.read())
+		dto_req.ParseFromString(file.read())
 
-	serialized_response = DataSerializer(req)
+	serialized_response = GenerateStructure(dto_req)
 
-	print(f'Response: {serialized_response.__str__()}')
+	print(f'\nResponse: {serialized_response.__str__()}')
 
 	with(open('./response_serialized', 'wb') as file):
 		file.write(serialized_response)

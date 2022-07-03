@@ -3,19 +3,19 @@ from ResponseClass import BusinessResponse, BusinessHierarchicalStep
 
 
 def MapToProtobufResponse(b_res: BusinessResponse):
-    res = messages_pb2.Response()
+    dto_res = messages_pb2.Response()
 
-    res.max_duration_step_name = b_res.max_duration_step_name
-    res.max_duration_step_duration = b_res.max_duration_step_duration
+    dto_res.max_duration_step_name = b_res.max_duration_step_name
+    dto_res.max_duration_step_duration = b_res.max_duration_step_duration
 
     hierarchical_step = MapHierarchicalStepToProtobuf(b_res.hierarchical_step)
-    res.hierarchical_step.name = hierarchical_step.name
-    res.hierarchical_step.duration = hierarchical_step.duration
+    dto_res.hierarchical_step.name = hierarchical_step.name
+    dto_res.hierarchical_step.duration = hierarchical_step.duration
 
     for child in hierarchical_step.children:
-        res.hierarchical_step.children.append(child)
+        dto_res.hierarchical_step.children.append(child)
 
-    return res
+    return dto_res
 
 
 def MapHierarchicalStepToProtobuf(hierarchical_step: BusinessHierarchicalStep):

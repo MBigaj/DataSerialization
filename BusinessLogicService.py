@@ -4,18 +4,26 @@ from business_mapper import MapToHierarchicalStep
 
 
 def RecurrentFindAndMapToHierarchical(parent: BusinessHierarchicalStep, potential_children, max_duration_step_name = None, max_duration_step_duration = float('-inf')):
-    children = FindAndMapToHierarchical(potential_children, parent.id)
-    sorted_children = sorted(children, key=lambda x: x.duration, reverse= True)
-    parent.children = sorted_children
+    children = FindChildren(potential_children, parent.id)
+    sorted_children = sorted(children, key=lambda x: x.duration, reverse=True)
+
+    hierarchical_children = list(map(lambda sorted_child: MapToHierarchicalStep(sorted_child), sorted_children))
+
+    parent.children = hierarchical_children
+
+    ids = [child.id for child in hierarchical_children]
+
+    for index, child in enumerate(potential_children):
+        if child.id in ids:
+            potential_children.pop(index)
 
     sum_of_durations_of_children = 0
     max_duration_step_duration_from_children = float('-inf')
     max_duration_step_name_from_children = ''
 
     for child in parent.children:
-        parent, duration, max_duration_step_duration_from_children, max_duration_step_name_from_children = RecurrentFindAndMapToHierarchical(child, potential_children, max_duration_step_name, max_duration_step_duration)
+        child, duration, max_duration_step_duration_from_children, max_duration_step_name_from_children = RecurrentFindAndMapToHierarchical(child, potential_children, max_duration_step_name, max_duration_step_duration)
         sum_of_durations_of_children += duration
-
 
     this_exact_duration = parent.duration - sum_of_durations_of_children
 
@@ -29,20 +37,20 @@ def RecurrentFindAndMapToHierarchical(parent: BusinessHierarchicalStep, potentia
     return parent, parent.duration, max_duration_step_duration, max_duration_step_name
 
 
-def FindAndMapToHierarchical(potential_children, parent_id):
+def FindChildren(potential_children, parent_id):
     step_children = []
 
     for potential_child in potential_children:
         if potential_child.parent_id == parent_id:
-            step_children.append(MapToHierarchicalStep(potential_child))
+            step_children.append(potential_child)
 
     return step_children
 
 
-def DisplayHierarchy(hierarchy, prefix = ""):
+def DisplayHierarchy(hierarchy, prefix=''):
     print(prefix, hierarchy.id, hierarchy.name)
     for child in hierarchy.children:
-        DisplayHierarchy(child, prefix + "---")
+        DisplayHierarchy(child, prefix + '---')
 
 
 
@@ -73,5 +81,6 @@ def DoBusinessLogic(req: BusinessRequest):
     full_hierarchy.max_duration_step_name = max_duration_step_name
 
     DisplayHierarchy(full_hierarchy)
+    print(f"Max Duration name, duration: '{full_hierarchy.max_duration_step_name}' - {full_hierarchy.max_duration_step_duration}")
 
     return full_hierarchy
